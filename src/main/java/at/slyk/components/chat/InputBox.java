@@ -9,17 +9,19 @@ import java.awt.*;
 public class InputBox extends JPanel {
     private final JTextField tf;
 
-    public InputBox(ChatLog logRef) {
+    public InputBox(ChatPanel panelRef) {
         super(new BorderLayout());
 
         this.tf = new JTextField();
 
-        // add messaage
         this.tf.addActionListener(e -> {
-            log.info(e);
-            logRef.addMessage(new Message("slyk26", tf.getText()));
+            if(e.getActionCommand().isBlank() || e.getActionCommand().isEmpty()) {
+                return;
+            }
+            log.debug(e);
+            panelRef.addMessage(new Message("slyk26", e.getActionCommand()));
             tf.setText("");
-            logRef.pushDownScrollbar();
+            panelRef.pushDownScrollbar();
         });
 
         this.add(tf, BorderLayout.CENTER);
