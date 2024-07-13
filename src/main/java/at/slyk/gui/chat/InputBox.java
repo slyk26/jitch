@@ -1,4 +1,4 @@
-package at.slyk.components.chat;
+package at.slyk.gui.chat;
 
 import lombok.extern.log4j.Log4j2;
 

@@ -1,4 +1,4 @@
-package at.slyk.components;
+package at.slyk.gui;
 
 import javax.swing.*;
 import java.awt.*;

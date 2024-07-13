@@ -1,4 +1,4 @@
-package at.slyk.components.chat;
+package at.slyk.gui.chat;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,10 +12,10 @@ public class ChatPanel extends JPanel {
 
     public ChatPanel() {
         super(new BorderLayout());
-
         var wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         this.view = new JPanel();
         this.view.setLayout(new GridLayout(0, 1));
+        this.view.setBackground(Color.GREEN);
         wrapper.add(this.view);
         this.pane = new JScrollPane(wrapper);
         this.pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -27,11 +27,13 @@ public class ChatPanel extends JPanel {
     }
 
     public void addMessage(Message msg) {
-        this.view.add(leftJustify(msg));
+        var p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        p.add(leftJustify(msg));
+        this.view.add(leftJustify(p));
         this.validate();
     }
 
-    private Component leftJustify(Message msg){
+    private Component leftJustify(Component msg){
         Box b = Box.createHorizontalBox();
         b.add(msg);
         b.add(Box.createHorizontalGlue());

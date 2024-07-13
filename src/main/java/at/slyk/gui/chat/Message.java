@@ -1,7 +1,8 @@
-package at.slyk.components.chat;
+package at.slyk.gui.chat;
 
+import at.slyk.gui.chat.emotes.Emote;
+import at.slyk.gui.chat.emotes.Emotes;
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,12 +10,10 @@ import java.awt.*;
 @Getter
 public class Message extends JPanel {
 
-    @SneakyThrows
     public Message(String user, String msg) {
         super();
-        this.setBackground(Color.RED);
-        this.setMinimumSize(new Dimension(ChatPanel.CHAT_WIDTH, this.getHeight()));
         var emotes = new Emotes();
+        this.setBackground(Color.RED);
         this.add(new JLabel(user + ": "));
 
         for (String word : msg.split(" ")) {
