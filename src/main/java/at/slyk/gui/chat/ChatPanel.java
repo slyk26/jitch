@@ -1,11 +1,11 @@
 package at.slyk.gui.chat;
 
 import at.slyk.twitch.TwitchChat;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 @Slf4j
 public class ChatPanel extends JPanel {
@@ -14,7 +14,6 @@ public class ChatPanel extends JPanel {
     public static final int MESSAGE_PADDING = CHAT_WIDTH - 25;
     public static final int MESSAGE_CONTAINER = CHAT_WIDTH - 20;
 
-    @Setter
     private boolean paused = false;
     private final JPanel view;
     private final JScrollPane pane;
@@ -38,9 +37,9 @@ public class ChatPanel extends JPanel {
         search.add(new SearchBar(this));
         this.add(search, BorderLayout.NORTH);
         this.add(this.pane, BorderLayout.CENTER);
-        this.pushDownScrollbar();
         this.add(new InputBox(this), BorderLayout.SOUTH);
-       }
+        this.initChatKeybinds();
+    }
 
     public void addMessage(Message msg) {
         var p = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -53,9 +52,11 @@ public class ChatPanel extends JPanel {
         }
     }
 
-    public void joinChat(String channel){
-        twitchChat.joinChannel(channel);
-        this.addMessage(new Message("Joining", channel, true));
+    public void joinChat(String channel) {
+        if (twitchChat.joinChannel(channel)) {
+            this.view.removeAll();
+            this.addMessage(new Message("Joined ", channel, true));
+        }
     }
 
     public void sendMessage(String message) {
@@ -67,5 +68,20 @@ public class ChatPanel extends JPanel {
             JScrollBar bar = this.pane.getVerticalScrollBar();
             bar.setValue(bar.getMaximum());
         });
+    }
+
+    private void initChatKeybinds() {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher(e -> {
+                    if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ALT) {
+                        paused = true;
+                    }
+
+                    if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_ALT) {
+                        paused = false;
+                    }
+
+                    return false;
+                });
     }
 }

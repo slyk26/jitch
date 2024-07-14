@@ -10,7 +10,6 @@ public class MainFrame extends JFrame {
 
         this.setContentPane(new MainPanel());
         this.setResizable(false);
-        this.setAlwaysOnTop(true);
         this.setTitle("Jitch demo");
         this.setSize(new Dimension(1280, 720));
         this.setLocationRelativeTo(null);

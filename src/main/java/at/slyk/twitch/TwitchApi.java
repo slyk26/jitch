@@ -52,7 +52,7 @@ public class TwitchApi {
     public List<SearchChannel> searchChannelsByName(String input) {
         input = URLEncoder.encode(input, StandardCharsets.UTF_8);
         var res = this.get(Utils.toURL(BASE + "search/channels?query=" + input + "&first=5"));
-        TwitchResponse<SearchChannel> body;
+        TwitchResponsePaginated<SearchChannel> body;
 
         try{
             body = new ObjectMapper().readValue(res, new TypeReference<>() {});

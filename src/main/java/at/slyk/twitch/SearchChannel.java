@@ -35,4 +35,9 @@ public class SearchChannel implements Comparable<SearchChannel> {
     private String title;
     @JsonProperty("started_at")
     private Date startedAt;
+
+    @Override
+    public String toString() {
+        return this.displayName;
+    }
 }

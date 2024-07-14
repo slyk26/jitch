@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 @Slf4j
 public class InputBox extends JPanel {
@@ -28,21 +26,6 @@ public class InputBox extends JPanel {
             panelRef.pushDownScrollbar();
         });
 
-        this.tf.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-               if(e.isAltDown()) {
-                   panelRef.setPaused(true);
-               }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-               if(e.getKeyCode() == KeyEvent.VK_ALT){
-                  panelRef.setPaused(false);
-               }
-            }
-        });
         this.add(tf, BorderLayout.CENTER);
     }
 }

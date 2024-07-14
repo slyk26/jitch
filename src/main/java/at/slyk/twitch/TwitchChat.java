@@ -22,14 +22,19 @@ public class TwitchChat {
                 .build();
     }
 
-    public void joinChannel(String channel){
+    public boolean joinChannel(String channel){
+
+        if(channel.equalsIgnoreCase(currentChannel)) return false;
+
         if(currentChannel != null) {
             log.info("leaving {}", currentChannel);
             this.twitchClient.getChat().leaveChannel(currentChannel);
         }
+
         log.info("joining {}", channel);
         this.twitchClient.getChat().joinChannel(channel);
         this.currentChannel = channel;
+        return true;
     }
 
     public void onMessage(Consumer<ChannelMessageEvent> consumer) {
