@@ -2,9 +2,9 @@ package at.slyk.server;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+@Slf4j
 public class DoneHandler implements HttpHandler {
 
     private final String msg;

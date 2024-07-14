@@ -8,10 +8,10 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import jakarta.servlet.ServletException;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 
-@Log4j2
+@Slf4j
 public class BackendServer {
 
     private Undertow server;
@@ -36,7 +36,7 @@ public class BackendServer {
             path.addPrefixPath("/done", new DoneHandler("Login successful! - You can close this window now!"));
             path.addPrefixPath("/error", new DoneHandler("Login failed! - Either you declined or other another Error occurred!"));
         } catch (ServletException e) {
-            log.error(e);
+            log.error(e.getMessage());
             this.server = null;
         }
 

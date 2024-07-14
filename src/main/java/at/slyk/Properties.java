@@ -1,12 +1,12 @@
 package at.slyk;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
+@Slf4j
 public class Properties {
 
     public enum Property {
@@ -34,6 +34,7 @@ public class Properties {
     public static void init(){
         Dotenv dotenv = Dotenv.load();
         set(Property.TWITCH_CLIENT_ID, dotenv.get("TWITCH_CLIENT_ID"));
+        set(Property.TWITCH_AUTHORIZATION, dotenv.get("TWITCH_AUTHORIZATION"));
     }
 
     public static void set(Property key, String value) {

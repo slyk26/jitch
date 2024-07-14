@@ -1,48 +1,71 @@
 package at.slyk.gui.chat;
 
+import at.slyk.twitch.TwitchChat;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.swing.*;
 import java.awt.*;
 
+@Slf4j
 public class ChatPanel extends JPanel {
 
     public static final int CHAT_WIDTH = 300;
+    public static final int MESSAGE_PADDING = CHAT_WIDTH - 25;
+    public static final int MESSAGE_CONTAINER = CHAT_WIDTH - 20;
 
+    @Setter
+    private boolean paused = false;
     private final JPanel view;
     private final JScrollPane pane;
+    private static final TwitchChat twitchChat = new TwitchChat();
 
     public ChatPanel() {
         super(new BorderLayout());
         var wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         this.view = new JPanel();
-        this.view.setLayout(new GridLayout(0, 1));
-        this.view.setBackground(Color.GREEN);
+        this.view.setMaximumSize(new Dimension(CHAT_WIDTH, this.view.getPreferredSize().height));
+        this.view.setLayout(new BoxLayout(this.view, BoxLayout.Y_AXIS));
         wrapper.add(this.view);
         this.pane = new JScrollPane(wrapper);
         this.pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        this.pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.setPreferredSize(new Dimension(CHAT_WIDTH, this.getPreferredSize().height));
 
+        twitchChat.onMessage(m -> this.addMessage(new Message(m.getUser().getName(), m.getMessage(), false)));
+
+        var search = new JPanel(new GridLayout(0, 1));
+        search.add(new SearchBar(this));
+        this.add(search, BorderLayout.NORTH);
         this.add(this.pane, BorderLayout.CENTER);
         this.pushDownScrollbar();
         this.add(new InputBox(this), BorderLayout.SOUTH);
-    }
+       }
 
     public void addMessage(Message msg) {
         var p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.add(leftJustify(msg));
-        this.view.add(leftJustify(p));
+        p.add(msg);
+        p.setPreferredSize(new Dimension(MESSAGE_CONTAINER, msg.getPreferredSize().height));
+        this.view.add(p);
         this.validate();
+        if (!paused) {
+            this.pushDownScrollbar();
+        }
     }
 
-    private Component leftJustify(Component msg){
-        Box b = Box.createHorizontalBox();
-        b.add(msg);
-        b.add(Box.createHorizontalGlue());
-        return b;
+    public void joinChat(String channel){
+        twitchChat.joinChannel(channel);
+        this.addMessage(new Message("Joining", channel, true));
     }
 
-    public void pushDownScrollbar(){
+    public void sendMessage(String message) {
+        twitchChat.send(message);
+    }
+
+    public void pushDownScrollbar() {
         SwingUtilities.invokeLater(() -> {
             JScrollBar bar = this.pane.getVerticalScrollBar();
             bar.setValue(bar.getMaximum());
         });
-    }}
+    }
+}

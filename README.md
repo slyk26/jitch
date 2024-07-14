@@ -10,10 +10,10 @@ Jitch (=Java Swing) Twitch client purely in Java Swing because it is the best fr
 
 ### TODO
 
-- [ ] fix chat spacing with emotes
+- [x] fix chat spacing with emotes
 - [ ] get correct scopes for login
 - [ ] store the key OAUTH key somethere secure
-- [ ] add IRC chat
+- [x] add IRC chat
 - [ ] add 7tv api for emotes & sets
 - [ ] async loading of emotes and caching
 - [ ] find out how to get m3u8 for twitch stream

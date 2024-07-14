@@ -1,12 +1,12 @@
 package at.slyk.gui.chat.emotes;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 
-@Log4j2
+@Slf4j
 public class Emote extends JPanel {
     public Emote(URL url) {
         super();

@@ -1,7 +1,7 @@
 package at.slyk.gui;
 
 import at.slyk.twitch.TwitchApi;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 
@@ -26,13 +26,13 @@ public class MainMenuBar extends JMenuBar {
         }
     }
 
-    @Log4j2
+    @Slf4j
     static class ApiMenu extends JMenu {
         public ApiMenu() {
             super("Api");
 
             var user = new JMenuItem("Twitch getUser");
-            user.addActionListener(actionEvent -> log.debug(twitchApi.getUserByName("siyk26")));
+            user.addActionListener(actionEvent -> log.debug(twitchApi.getUserByName("siyk26").toString()));
             this.add(user);
         }
     }

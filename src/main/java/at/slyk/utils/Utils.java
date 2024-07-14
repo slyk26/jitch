@@ -1,6 +1,6 @@
 package at.slyk.utils;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -13,7 +13,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-@Log4j2
+@Slf4j
 public class Utils {
 
     private Utils() {
@@ -36,7 +36,7 @@ public class Utils {
             try {
                 a = URI.create(url).toURL();
             } catch (MalformedURLException e) {
-                log.debug(e);
+                log.debug(e.getMessage());
             }
         }
         assert a != null;

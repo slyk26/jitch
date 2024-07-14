@@ -5,12 +5,12 @@ import io.undertow.servlet.api.ServletInfo;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@Log4j2
+@Slf4j
 public class LoginServlet extends HttpServlet {
 
     // parse fragment to object and forward it with POST and redirect
@@ -56,7 +56,7 @@ public class LoginServlet extends HttpServlet {
         try (PrintWriter pw = resp.getWriter()) {
             pw.println("<html><body><div id='info'></div>" + JS + "</body></html>");
         }catch (IOException e){
-            log.error(e);
+            log.error(e.getMessage());
         }
     }
 

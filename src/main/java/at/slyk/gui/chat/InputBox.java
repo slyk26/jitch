@@ -1,11 +1,13 @@
 package at.slyk.gui.chat;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-@Log4j2
+@Slf4j
 public class InputBox extends JPanel {
     private final JTextField tf;
 
@@ -18,12 +20,29 @@ public class InputBox extends JPanel {
             if(e.getActionCommand().isBlank() || e.getActionCommand().isEmpty()) {
                 return;
             }
-            log.debug(e);
-            panelRef.addMessage(new Message("slyk26", e.getActionCommand()));
+            log.debug(e.getActionCommand());
+
+            panelRef.sendMessage(e.getActionCommand());
+            panelRef.addMessage(new Message("slyk26", e.getActionCommand(), false));
             tf.setText("");
             panelRef.pushDownScrollbar();
         });
 
+        this.tf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+               if(e.isAltDown()) {
+                   panelRef.setPaused(true);
+               }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+               if(e.getKeyCode() == KeyEvent.VK_ALT){
+                  panelRef.setPaused(false);
+               }
+            }
+        });
         this.add(tf, BorderLayout.CENTER);
     }
 }

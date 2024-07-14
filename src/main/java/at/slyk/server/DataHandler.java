@@ -6,9 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+@Slf4j
 public class DataHandler implements HttpHandler {
     @Override
     public void handleRequest(HttpServerExchange e) {
@@ -29,8 +29,9 @@ public class DataHandler implements HttpHandler {
         try {
             res = new ObjectMapper().readValue(body, AuthorizationResponse.class);
             Properties.set(Properties.Property.TWITCH_AUTHORIZATION, res.getAccessToken());
+
         }catch (JsonProcessingException ex){
-            log.error(ex);
+            log.error(ex.getMessage());
         }
         log.debug("OK! - {}", res);
     }
