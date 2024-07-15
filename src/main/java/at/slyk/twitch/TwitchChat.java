@@ -9,9 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Consumer;
 
+import static at.slyk.gui.MainPanel.player;
+
 @Slf4j
 public class TwitchChat {
     private final TwitchClient twitchClient;
+    private static final TwitchApi api = new TwitchApi();
 
     private String currentChannel = null;
 
@@ -34,6 +37,7 @@ public class TwitchChat {
         log.info("joining {}", channel);
         this.twitchClient.getChat().joinChannel(channel);
         this.currentChannel = channel;
+        player.get().play(api.getStreams(channel).getStreams().getSevenTwentyPSixtyFrames().getUrl());
         return true;
     }
 

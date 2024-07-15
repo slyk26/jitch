@@ -1,6 +1,6 @@
 package at.slyk.gui.chat;
 
-import at.slyk.twitch.SearchChannel;
+import at.slyk.twitch.types.SearchChannel;
 import at.slyk.twitch.TwitchApi;
 import lombok.extern.slf4j.Slf4j;
 

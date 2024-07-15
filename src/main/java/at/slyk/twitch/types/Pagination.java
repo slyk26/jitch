@@ -1,4 +1,4 @@
-package at.slyk.twitch;
+package at.slyk.twitch.types;
 
 import lombok.Data;
 

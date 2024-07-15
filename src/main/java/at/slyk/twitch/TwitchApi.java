@@ -1,9 +1,11 @@
 package at.slyk.twitch;
 
 import at.slyk.Properties;
+import at.slyk.twitch.types.*;
 import at.slyk.utils.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +18,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class TwitchApi {
@@ -40,10 +44,11 @@ public class TwitchApi {
 
         TwitchResponse<TwitchUser> body;
         try {
-            body = new ObjectMapper().readValue(res, new TypeReference<>() {});
+            body = new ObjectMapper().readValue(res, new TypeReference<>() {
+            });
         } catch (JsonProcessingException e) {
-           log.error(e.getMessage());
-           return null;
+            log.error(e.getMessage());
+            return null;
         }
 
         return body.getData().getFirst();
@@ -54,25 +59,51 @@ public class TwitchApi {
         var res = this.get(Utils.toURL(BASE + "search/channels?query=" + input + "&first=5"));
         TwitchResponsePaginated<SearchChannel> body;
 
-        try{
-            body = new ObjectMapper().readValue(res, new TypeReference<>() {});
-        }catch (JsonProcessingException e){
+        try {
+            body = new ObjectMapper().readValue(res, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return List.of();
         }
         return body.getData();
     }
 
-    private String get(URL url){
+    public StreamLinks getStreams(String channel) {
+        var body = "https://twitch.tv/" + channel;
+        var res = this.post(Utils.toURL("https://onlinetool.app/run/streamlink"), body);
+        log.debug(res);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            StreamLinkFormResponse form = mapper.readValue(res, StreamLinkFormResponse.class);
+            log.debug("{}", form.getOutput());
+            var formRes = mapper.readValue(form.getOutput().getFirst(), new TypeReference<StreamLinks>() {});
+            log.debug("{}", formRes);
+            return formRes;
+
+        } catch (JsonProcessingException e) {
+            log.debug("{}", res);
+            log.error("{}", e.getMessage());
+            return null;
+        }
+    }
+
+    private String post(URL url, String body) {
+        Map<String, String> formData = Map.of("streamlink_url", body);
         HttpRequest r;
         try {
             r = HttpRequest.newBuilder()
                     .uri(url.toURI())
-                    .headers(makeHeaders().toArray(String[]::new))
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(HttpRequest.BodyPublishers.ofString(encodeFormData(formData)))
                     .build();
+            log.debug("{}", r);
         } catch (URISyntaxException e) {
-           log.error(e.getMessage());
-           return "";
+            log.error(e.getMessage());
+            return "";
         }
 
         HttpResponse<String> res;
@@ -87,7 +118,31 @@ public class TwitchApi {
         return res.body();
     }
 
-    private List<String> makeHeaders(){
+    private String get(URL url) {
+        HttpRequest r;
+        try {
+            r = HttpRequest.newBuilder()
+                    .uri(url.toURI())
+                    .headers(makeHeaders().toArray(String[]::new))
+                    .build();
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage());
+            return "";
+        }
+
+        HttpResponse<String> res;
+        try {
+            res = client.send(r, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            Thread.currentThread().interrupt();
+            return "";
+        }
+
+        return res.body();
+    }
+
+    private List<String> makeHeaders() {
         List<String> headers = new ArrayList<>();
 
         headers.add("Authorization");
@@ -96,6 +151,12 @@ public class TwitchApi {
         headers.add(Properties.get(Properties.Property.TWITCH_CLIENT_ID));
 
         return headers;
+    }
+
+    private static String encodeFormData(Map<String, String> formData) {
+        return formData.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(Collectors.joining("&"));
     }
 
 }

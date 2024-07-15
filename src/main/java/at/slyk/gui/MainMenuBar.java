@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 
+import static at.slyk.gui.MainPanel.player;
+
 public class MainMenuBar extends JMenuBar {
 
     private static final TwitchApi twitchApi = new TwitchApi();
@@ -34,6 +36,14 @@ public class MainMenuBar extends JMenuBar {
             var user = new JMenuItem("Twitch getUser");
             user.addActionListener(actionEvent -> log.debug(twitchApi.getUserByName("siyk26").toString()));
             this.add(user);
+
+            var streams = new JMenuItem("Get Stream");
+            streams.addActionListener(actionEvent -> {
+                var url = twitchApi.getStreams("merleperle").getStreams().getSevenTwentyPSixtyFrames().getUrl();
+                player.get().play(url);
+
+            });
+            this.add(streams);
         }
     }
 }
