@@ -40,7 +40,7 @@ public class SearchBar extends JComboBox<SearchChannel> {
 
             if (!this.currentSearch.equalsIgnoreCase(input)) {
                 this.removeAllItems();
-                this .foundChannels = getChannels(input);
+                this.foundChannels = getChannels(input);
                 log.debug("fetching channels: {}", this.foundChannels);
                 this.currentSearch = input;
                 for (var channel : foundChannels) {

@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+import static at.slyk.gui.MainPanel.player;
+
 @Slf4j
 public class ChatPanel extends JPanel {
 
@@ -56,6 +58,7 @@ public class ChatPanel extends JPanel {
         if (twitchChat.joinChannel(channel)) {
             this.view.removeAll();
             this.addMessage(new Message("Joined ", channel, true));
+            player.get().play(channel);
         }
     }
 

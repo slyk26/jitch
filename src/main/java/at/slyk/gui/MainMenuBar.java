@@ -38,11 +38,7 @@ public class MainMenuBar extends JMenuBar {
             this.add(user);
 
             var streams = new JMenuItem("Get Stream");
-            streams.addActionListener(actionEvent -> {
-                var url = twitchApi.getStreams("merleperle").getStreams().getSevenTwentyPSixtyFrames().getUrl();
-                player.get().play(url);
-
-            });
+            streams.addActionListener(actionEvent -> player.get().play("merleperle"));
             this.add(streams);
         }
     }
