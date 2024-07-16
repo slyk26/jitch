@@ -19,7 +19,7 @@ public class ChatPanel extends JPanel {
     private boolean paused = false;
     private final JPanel view;
     private final JScrollPane pane;
-    private static final TwitchChat twitchChat = new TwitchChat();
+    public static final TwitchChat twitchChat = new TwitchChat();
 
     public ChatPanel() {
         super(new BorderLayout());

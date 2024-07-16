@@ -1,11 +1,10 @@
 package at.slyk.gui;
 
+import at.slyk.PrefService;
 import at.slyk.twitch.TwitchApi;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 
-import static at.slyk.gui.MainPanel.player;
 
 public class MainMenuBar extends JMenuBar {
 
@@ -15,7 +14,6 @@ public class MainMenuBar extends JMenuBar {
         super();
 
         this.add(new AccountMenu());
-        this.add(new ApiMenu());
     }
 
     static class AccountMenu extends JMenu {
@@ -25,21 +23,10 @@ public class MainMenuBar extends JMenuBar {
             var login = new JMenuItem("Login");
             login.addActionListener(actionEvent -> twitchApi.login());
             this.add(login);
-        }
-    }
 
-    @Slf4j
-    static class ApiMenu extends JMenu {
-        public ApiMenu() {
-            super("Api");
-
-            var user = new JMenuItem("Twitch getUser");
-            user.addActionListener(actionEvent -> log.debug(twitchApi.getUserByName("siyk26").toString()));
-            this.add(user);
-
-            var streams = new JMenuItem("Get Stream");
-            streams.addActionListener(actionEvent -> player.get().play("merleperle"));
-            this.add(streams);
+            var logout = new JMenuItem("Logout");
+            logout.addActionListener(actionEvent -> PrefService.invalidate());
+            this.add(logout);
         }
     }
 }

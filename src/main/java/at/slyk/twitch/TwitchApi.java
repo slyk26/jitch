@@ -1,6 +1,6 @@
 package at.slyk.twitch;
 
-import at.slyk.Properties;
+import at.slyk.PrefService;
 import at.slyk.twitch.types.*;
 import at.slyk.utils.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,11 +31,27 @@ public class TwitchApi {
     public void login() {
         var scopes = URLEncoder.encode("chat:read chat:edit", StandardCharsets.UTF_8);
         String s = "https://id.twitch.tv/oauth2/authorize?" +
-                "client_id=" + Properties.get(Properties.Property.TWITCH_CLIENT_ID) + "&" +
+                "client_id=" + PrefService.getCLIENTID() + "&" +
                 "response_type=token&" +
                 "redirect_uri=http://localhost:9002/login&" +
                 "scope=" + scopes;
         Utils.openWebpage(s);
+    }
+
+    public TwitchUser getMe() {
+        var res = this.get(Utils.toURL(BASE + "users?"));
+        log.debug(res);
+
+        TwitchResponse<TwitchUser> body;
+        try {
+            body = new ObjectMapper().readValue(res, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+
+        return body.getData().getFirst();
     }
 
     public TwitchUser getUserByName(final String userName) {
@@ -147,9 +163,9 @@ public class TwitchApi {
         List<String> headers = new ArrayList<>();
 
         headers.add("Authorization");
-        headers.add("Bearer " + Properties.get(Properties.Property.TWITCH_AUTHORIZATION));
+        headers.add("Bearer " + PrefService.getToken());
         headers.add("Client-Id");
-        headers.add(Properties.get(Properties.Property.TWITCH_CLIENT_ID));
+        headers.add(PrefService.getCLIENTID());
 
         return headers;
     }

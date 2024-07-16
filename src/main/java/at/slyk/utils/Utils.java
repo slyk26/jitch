@@ -48,7 +48,6 @@ public class Utils {
             if (!isValidUrl(urlString)) return;
             Desktop.getDesktop().browse(URI.create(urlString));
         } catch (Exception e) {
-            log.warn("Cannot open webpage, trying xdg-open");
             Utils.openWebpageLinux(urlString);
         }
     }
@@ -57,7 +56,7 @@ public class Utils {
         try {
             Runtime.getRuntime().exec(new String[]{"xdg-open", url});
         } catch (IOException e) {
-            log.error("Cannot open webpage, giving up");
+            log.error("Cannot open webpage");
         }
     }
 

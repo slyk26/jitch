@@ -1,6 +1,8 @@
 package at.slyk.server;
 
-import at.slyk.Properties;
+import at.slyk.PrefService;
+import at.slyk.gui.chat.ChatPanel;
+import at.slyk.twitch.TwitchApi;
 import at.slyk.utils.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +21,7 @@ public class DataHandler implements HttpHandler {
 
         var body = Utils.inputStreamToString(e.getInputStream());
 
-        if(body.isBlank() || body.isEmpty()) {
+        if (body.isBlank() || body.isEmpty()) {
             log.info("User denied access on Twitch prompt");
             e.setStatusCode(400);
             return;
@@ -28,9 +30,12 @@ public class DataHandler implements HttpHandler {
         AuthorizationResponse res = null;
         try {
             res = new ObjectMapper().readValue(body, AuthorizationResponse.class);
-            Properties.set(Properties.Property.TWITCH_AUTHORIZATION, res.getAccessToken());
+            PrefService.setToken(res.getAccessToken());
+            var name = new TwitchApi().getMe().getDisplayName();
+            PrefService.setUsername(name);
+            ChatPanel.twitchChat.lateLogin();
 
-        }catch (JsonProcessingException ex){
+        } catch (JsonProcessingException ex) {
             log.error(ex.getMessage());
         }
         log.debug("OK! - {}", res);

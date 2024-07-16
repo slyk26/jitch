@@ -1,6 +1,6 @@
 package at.slyk.twitch;
 
-import at.slyk.Properties;
+import at.slyk.PrefService;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
@@ -14,12 +14,28 @@ public class TwitchChat {
     private final TwitchClient twitchClient;
 
     private String currentChannel = null;
+    private static final String TWITCH = "twitch";
 
     public TwitchChat() {
-        this.twitchClient = TwitchClientBuilder.builder()
-                .withEnableChat(true)
-                .withChatAccount(new OAuth2Credential("twitch", Properties.get(Properties.Property.TWITCH_AUTHORIZATION)))
-                .build();
+        var builder = TwitchClientBuilder.builder()
+                .withEnableChat(true);
+        try {
+            log.info("with Chat Account: {}", PrefService.getToken());
+            builder.withChatAccount(new OAuth2Credential(TWITCH, PrefService.getToken()));
+        } catch (NullPointerException e) {
+            log.info("fresh login");
+        }
+        this.twitchClient = builder.build();
+    }
+
+    public void lateLogin() {
+        log.info("user late login");
+        twitchClient.getChat().getCredentialManager().addCredential(TWITCH, new OAuth2Credential(TWITCH, PrefService.getToken()));
+    }
+
+    public void leaveChannel() {
+        log.info("leaving {}", currentChannel);
+        this.twitchClient.getChat().leaveChannel(currentChannel);
     }
 
     public boolean joinChannel(String channel){
@@ -27,8 +43,7 @@ public class TwitchChat {
         if(channel.equalsIgnoreCase(currentChannel)) return false;
 
         if(currentChannel != null) {
-            log.info("leaving {}", currentChannel);
-            this.twitchClient.getChat().leaveChannel(currentChannel);
+            this.leaveChannel();
         }
 
         log.info("joining {}", channel);
