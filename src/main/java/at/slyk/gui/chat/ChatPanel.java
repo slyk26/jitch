@@ -57,7 +57,7 @@ public class ChatPanel extends JPanel {
     public void joinChat(String channel) {
         if (twitchChat.joinChannel(channel)) {
             this.view.removeAll();
-            this.addMessage(new Message("Joined ", channel, true));
+            this.addMessage(new Message("Joining ", channel, true));
             player.get().play(channel);
         }
     }

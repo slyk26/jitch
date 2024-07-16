@@ -98,6 +98,7 @@ public class TwitchApi {
             r = HttpRequest.newBuilder()
                     .uri(url.toURI())
                     .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
                     .POST(HttpRequest.BodyPublishers.ofString(encodeFormData(formData)))
                     .build();
             log.debug("{}", r);
