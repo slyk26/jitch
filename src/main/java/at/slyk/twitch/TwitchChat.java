@@ -11,31 +11,28 @@ import java.util.function.Consumer;
 
 @Slf4j
 public class TwitchChat {
-    private final TwitchClient twitchClient;
+    private TwitchClient twitchClient;
 
     private String currentChannel = null;
     private static final String TWITCH = "twitch";
 
     public TwitchChat() {
-        var builder = TwitchClientBuilder.builder()
-                .withEnableChat(true);
-        try {
-            log.info("with Chat Account: {}", PrefService.getToken());
-            builder.withChatAccount(new OAuth2Credential(TWITCH, PrefService.getToken()));
-        } catch (NullPointerException e) {
-            log.info("fresh login");
-        }
-        this.twitchClient = builder.build();
+        this.login();
     }
 
-    public void lateLogin() {
-        log.info("user late login");
-        twitchClient.getChat().getCredentialManager().addCredential(TWITCH, new OAuth2Credential(TWITCH, PrefService.getToken()));
+    public void login() {
+        log.debug("chat login");
+        this.twitchClient = TwitchClientBuilder.builder()
+                .withChatAccount(new OAuth2Credential(TWITCH, PrefService.getToken()))
+                .withEnableChat(true)
+                .build();
     }
 
     public void leaveChannel() {
-        log.info("leaving {}", currentChannel);
-        this.twitchClient.getChat().leaveChannel(currentChannel);
+        if (currentChannel != null) {
+            log.info("leaving {}", currentChannel);
+            this.twitchClient.getChat().leaveChannel(currentChannel);
+        }
     }
 
     public boolean joinChannel(String channel){

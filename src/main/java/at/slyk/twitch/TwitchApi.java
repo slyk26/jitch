@@ -123,16 +123,7 @@ public class TwitchApi {
             return "";
         }
 
-        HttpResponse<String> res;
-        try {
-            res = client.send(r, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            Thread.currentThread().interrupt();
-            return "";
-        }
-
-        return res.body();
+        return doRequest(r);
     }
 
     private String get(URL url) {
@@ -147,6 +138,10 @@ public class TwitchApi {
             return "";
         }
 
+        return doRequest(r);
+    }
+
+    private String doRequest(HttpRequest r) {
         HttpResponse<String> res;
         try {
             res = client.send(r, HttpResponse.BodyHandlers.ofString());

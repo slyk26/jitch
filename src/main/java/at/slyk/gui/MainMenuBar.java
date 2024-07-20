@@ -1,11 +1,12 @@
 package at.slyk.gui;
 
-import at.slyk.PrefService;
+import at.slyk.Main;
 import at.slyk.twitch.TwitchApi;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 
-
+@Slf4j
 public class MainMenuBar extends JMenuBar {
 
     private static final TwitchApi twitchApi = new TwitchApi();
@@ -25,8 +26,16 @@ public class MainMenuBar extends JMenuBar {
             this.add(login);
 
             var logout = new JMenuItem("Logout");
-            logout.addActionListener(actionEvent -> PrefService.invalidate());
+            logout.addActionListener(actionEvent -> Main.user.onNext(null));
             this.add(logout);
+
+            Main.user.subscribe(u -> {
+                log.debug("subscribe in MenuBar: {}", u);
+                var loggedIn = (u != null && u.getAccessToken() != null && !u.getAccessToken().isBlank());
+                login.setEnabled(!loggedIn);
+                logout.setEnabled(loggedIn);
+            });
+
         }
     }
 }

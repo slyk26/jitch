@@ -1,4 +1,4 @@
-package at.slyk.gui;
+package at.slyk.gui.common;
 
 import lombok.Getter;
 import lombok.Setter;

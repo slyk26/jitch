@@ -13,6 +13,6 @@ Jitch (=Java Swing) Twitch client purely in Java Swing because it is the best fr
 - [x] find out how to get m3u8 for twitch stream
 - [ ] add player UI
 - [x] inject vlc for network stream
-- [ ] **find a better way to communicate between components**
+- [x] **find a better way to communicate between components**
 - [ ] fin a different way to get m3u8 links to avoid cmd rejection
 - [x] first unit tests

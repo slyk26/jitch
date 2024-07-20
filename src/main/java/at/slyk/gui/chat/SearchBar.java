@@ -1,7 +1,8 @@
 package at.slyk.gui.chat;
 
-import at.slyk.twitch.types.SearchChannel;
+import at.slyk.Main;
 import at.slyk.twitch.TwitchApi;
+import at.slyk.twitch.types.SearchChannel;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -48,6 +49,8 @@ public class SearchBar extends JComboBox<SearchChannel> {
                 }
             }
         });
+
+        Main.user.subscribe(u -> setEnabled(u != null));
     }
 
     private List<SearchChannel> getChannels(String input) {

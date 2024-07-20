@@ -1,7 +1,8 @@
 package at.slyk.server;
 
+import at.slyk.Main;
 import at.slyk.PrefService;
-import at.slyk.gui.chat.ChatPanel;
+import at.slyk.common.User;
 import at.slyk.twitch.TwitchApi;
 import at.slyk.utils.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,8 +33,8 @@ public class DataHandler implements HttpHandler {
             res = new ObjectMapper().readValue(body, AuthorizationResponse.class);
             PrefService.setToken(res.getAccessToken());
             var name = new TwitchApi().getMe().getDisplayName();
-            PrefService.setUsername(name);
-            ChatPanel.twitchChat.lateLogin();
+
+            Main.user.onNext(new User(name, res.getAccessToken()));
 
         } catch (JsonProcessingException ex) {
             log.error(ex.getMessage());

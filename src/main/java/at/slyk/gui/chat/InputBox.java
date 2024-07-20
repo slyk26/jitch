@@ -1,7 +1,8 @@
 package at.slyk.gui.chat;
 
+import at.slyk.Main;
 import at.slyk.PrefService;
-import at.slyk.gui.PlaceholderTextField;
+import at.slyk.gui.common.PlaceholderTextField;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -9,9 +10,9 @@ import java.awt.*;
 
 @Slf4j
 public class InputBox extends JPanel {
-    private static final String USERNAME = PrefService.getUsername();
-    private static final PlaceholderTextField tf = new PlaceholderTextField("Send a message as " + USERNAME + "...");
 
+    private static final String PLACEHOLDER = "Login in the Menubar first";
+    private final PlaceholderTextField tf = new PlaceholderTextField(PLACEHOLDER);
 
     public InputBox(ChatPanel panelRef) {
         super(new BorderLayout());
@@ -29,5 +30,16 @@ public class InputBox extends JPanel {
         });
 
         this.add(tf, BorderLayout.CENTER);
+
+        Main.user.subscribe(u -> {
+            if (u != null) {
+                tf.setEnabled(true);
+                tf.setPlaceholder("Send a message as " + u.getLoginName() + "...");
+            } else {
+                tf.setEnabled(false);
+                tf.setPlaceholder(PLACEHOLDER);
+            }
+            tf.repaint();
+        });
     }
 }

@@ -6,17 +6,28 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class MainPanel extends JPanel {
-    public static final AtomicReference<StreamPlayer> player = new AtomicReference<>();
-
-    public MainPanel() {
+    public MainPanel(boolean withPlayer) {
         super(new BorderLayout());
-        player.set(new StreamPlayer(this));
-        this.setBackground(Color.BLACK);
-        this.add(new ChatPanel(), BorderLayout.EAST);
-        this.add(new MainMenuBar(), BorderLayout.NORTH);
+
+        StreamPlayer player = null;
+
+        if (withPlayer) {
+            player = new StreamPlayer();
+        }
+
+        var chatPanel = new ChatPanel(player);
+        var bar = new MainMenuBar();
+
+        this.add(bar, BorderLayout.NORTH);
+
+        if (withPlayer) {
+            this.add(chatPanel, BorderLayout.EAST);
+            this.add(player, BorderLayout.CENTER);
+        } else {
+            this.add(chatPanel, BorderLayout.CENTER);
+        }
     }
 }

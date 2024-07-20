@@ -1,80 +1,70 @@
 package at.slyk.gui.chat;
 
-import at.slyk.gui.chat.emotes.Emote;
-import at.slyk.gui.chat.emotes.Emotes;
+import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Getter
-public class Message extends JPanel {
+public class Message extends JTextPane {
 
-    private static boolean toggle = false;
-
+    private final boolean system;
+    private final String user;
+    private final Color userColor;
     private final String rawMessage;
 
+    public Message(ChannelMessageEvent e, boolean system) {
+        super();
+        this.rawMessage = e.getMessage();
+        this.system = system;
+        this.user = e.getUser().getName();
+        this.userColor = Color.decode(e.getMessageEvent().getUserChatColor().orElse("#000"));
+        setMessage();
+    }
+
     public Message(String user, String msg, boolean system) {
-        super(new FlowLayout(FlowLayout.LEFT));
-        var emotes = new Emotes();
+        super();
         this.rawMessage = msg;
-        if(toggle) {
-            this.setBackground(Color.LIGHT_GRAY);
-        } else {
-            this.setBackground(Color.GRAY);
-        }
-
-        if(system){
-            setBackground(Color.YELLOW);
-        } else {
-            Message.setToggle(!toggle);
-        }
-        this.add(new JLabel(user + (!system ? ":" : "")));
-
-        for (String word : msg.split(" ")) {
-            var e = emotes.getEmote(word);
-
-            if (e != null) {
-                this.add(new Emote(e));
-            } else {
-                for(JLabel l: wordWrappedJLabel(user, word)) {
-                    log.trace("adding size: {}", l.getPreferredSize());
-                    this.add(l);
-                }
-            }
-        }
-
-        var rows = this.getPreferredSize().width / ChatPanel.MESSAGE_PADDING + 1;
-        this.setPreferredSize(new Dimension(ChatPanel.MESSAGE_PADDING, this.getPreferredSize().height*rows));
-        log.trace("rows: {} size: {}", rows, this.getPreferredSize());
-        this.setVisible(true);
+        this.user = user;
+        this.system = system;
+        this.userColor = Color.WHITE;
+        setMessage();
     }
 
-    private static void setToggle(boolean t) {
-        toggle = t;
+    private void setMessage() {
+        append(user, userColor, true);
+        append(": ", Color.WHITE, true);
+        append(rawMessage, Color.WHITE, false);
+        setBackground(ChatPanel.BACKGROUND);
+        resize();
+        setEditable(false);
     }
 
-    private static java.util.List<JLabel> wordWrappedJLabel(String user, String word) {
-        if(word.length() < 30) return List.of(new JLabel(word));
+    private void append(String msg, Color c, boolean bold) {
+        MutableAttributeSet aset = new SimpleAttributeSet(SimpleAttributeSet.EMPTY);
+        aset.addAttribute(StyleConstants.Foreground, c);
+        aset.addAttribute(StyleConstants.Alignment, StyleConstants.LeftIndent);
+        StyleConstants.setBold(aset, bold);
 
-        log.trace("{}", word);
-        int userW = new JLabel(user + ":").getPreferredSize().width;
-        java.util.List<JLabel> ret = new ArrayList<>();
-        JLabel toBeAdded = new JLabel();
-        for(char c : word.toCharArray()) {
-            toBeAdded.setText(toBeAdded.getText() + c);
-            log.trace("current width: {} - label: {}", toBeAdded.getPreferredSize().width, toBeAdded.getText());
-            if(toBeAdded.getPreferredSize().width + (ret.isEmpty() ? userW + 20 : 0) >= ChatPanel.MESSAGE_PADDING ) {
-                log.trace("max: {} adding {} size: {}", ChatPanel.MESSAGE_PADDING, toBeAdded.getText() + userW, toBeAdded.getPreferredSize().width);
-                ret.add(toBeAdded);
-                toBeAdded = new JLabel();
-            }
-        }
-        ret.add(toBeAdded);
-        return ret;
+        int len = this.getDocument().getLength();
+        this.setCaretPosition(len);
+        this.setCharacterAttributes(aset, false);
+        this.replaceSelection(msg);
     }
+
+    private void resize() {
+        this.setMargin(new Insets(0, 0, 0, 0));
+        var totalWidth = this.getFontMetrics(this.getFont()).stringWidth(this.getText());
+        var lines = totalWidth / ChatPanel.MESSAGE_CONTAINER + 1;
+        var newHeight = getPreferredSize().height * lines + 4;
+        setPreferredSize(new Dimension(ChatPanel.MESSAGE_CONTAINER, newHeight));
+        this.setMargin(new Insets(4, 4, 4, 4));
+    }
+
 }

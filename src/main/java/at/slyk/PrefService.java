@@ -36,7 +36,7 @@ public class PrefService {
         Preferences.userRoot().node(PrefService.class.getName()).put(pref.toString(), value);
     }
 
-    private static void clear() {
+    public static void invalidate() {
         try {
             Preferences.userRoot().node(PrefService.class.getName()).clear();
         } catch (BackingStoreException e) {
@@ -59,9 +59,4 @@ public class PrefService {
     public static void setToken(String token) {
         set(Pref.TOKEN, token);
     }
-
-    public static void invalidate() {
-        clear();
-    }
-
 }
