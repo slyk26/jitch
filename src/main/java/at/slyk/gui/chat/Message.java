@@ -3,6 +3,8 @@ package at.slyk.gui.chat;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import raven.emoji.AutoWrapText;
+import raven.emoji.EmojiIcon;
 
 import javax.swing.*;
 import javax.swing.text.MutableAttributeSet;
@@ -24,7 +26,7 @@ public class Message extends JTextPane {
         this.rawMessage = e.getMessage();
         this.system = system;
         this.user = e.getUser().getName();
-        this.userColor = Color.decode(e.getMessageEvent().getUserChatColor().orElse("#000"));
+        this.userColor = Color.decode(e.getMessageEvent().getUserChatColor().orElse("#fffffffff"));
         setMessage();
     }
 
@@ -38,6 +40,8 @@ public class Message extends JTextPane {
     }
 
     private void setMessage() {
+        this.setEditorKit(new AutoWrapText(this));
+        EmojiIcon.getInstance().installTextPane(this);
         append(user, userColor, true);
         append(": ", Color.WHITE, true);
         append(rawMessage, Color.WHITE, false);
@@ -59,10 +63,12 @@ public class Message extends JTextPane {
     }
 
     private void resize() {
+        var magicPaddingNumber = 35;
         this.setMargin(new Insets(0, 0, 0, 0));
-        var totalWidth = this.getFontMetrics(this.getFont()).stringWidth(this.getText());
-        var lines = totalWidth / ChatPanel.MESSAGE_CONTAINER + 1;
+        double totalWidth = this.getFontMetrics(this.getFont()).stringWidth(this.getText());
+        var lines = (int) Math.ceil(totalWidth / (ChatPanel.MESSAGE_CONTAINER - magicPaddingNumber));
         var newHeight = getPreferredSize().height * lines + 4;
+        log.debug("total: {} lines: {} newHeight:{}", totalWidth, lines, newHeight);
         setPreferredSize(new Dimension(ChatPanel.MESSAGE_CONTAINER, newHeight));
         this.setMargin(new Insets(4, 4, 4, 4));
     }

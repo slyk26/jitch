@@ -33,6 +33,7 @@ public class ChatPanel extends JPanel {
         wrapper.add(this.view);
         wrapper.setBackground(BACKGROUND);
         this.pane = new JScrollPane(wrapper);
+        this.pane.getVerticalScrollBar().setUnitIncrement(20);
         this.pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         this.pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.setPreferredSize(new Dimension(CHAT_WIDTH.get(), this.getPreferredSize().height));
@@ -65,7 +66,7 @@ public class ChatPanel extends JPanel {
         if (!paused) {
             this.pushDownScrollbar();
         }
-        log.trace("{} {} {}", msg.getText(), msg.getPreferredSize(), msg);
+        log.debug("{} {} {}", msg.getText(), msg.getPreferredSize(), msg);
     }
 
     public void joinChat(String channel) {

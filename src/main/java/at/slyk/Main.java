@@ -7,6 +7,7 @@ import com.github.weisj.darklaf.LafManager;
 import com.github.weisj.darklaf.theme.OneDarkTheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import raven.emoji.EmojiIcon;
 import rx.subjects.PublishSubject;
 
 import javax.swing.*;
@@ -29,6 +30,7 @@ public class Main {
             }
         });
 
+        EmojiIcon.getInstance().installEmojiSvg();
         LafManager.setTheme(new OneDarkTheme());
         LafManager.install();
         new BackendServer().start();
