@@ -68,4 +68,19 @@ public class TwitchApiTest {
 
         Assert.assertEquals(channels, List.of());
     }
+
+    @Test
+    public void testGetGlobalEmotes() {
+        var emotes = twitchApi.getGlobalEmotes();
+
+        Assert.assertNotNull(emotes);
+    }
+
+    @Test
+    public void testGetChannelEmotes() {
+        var channel = twitchApi.searchChannelsByName("forsen").getFirst();
+        var channelEmotes = twitchApi.getChannelEmotes(channel.getId());
+
+        Assert.assertNotNull(channelEmotes);
+    }
 }

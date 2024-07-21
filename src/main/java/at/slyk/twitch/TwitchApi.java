@@ -107,6 +107,32 @@ public class TwitchApi {
         }
     }
 
+    public TwitchResponseEmote<Emote> getGlobalEmotes() {
+        var res = this.get(Utils.toURL(BASE + "chat/emotes/global"));
+        log.debug(res);
+
+        try {
+            return new ObjectMapper().readValue(res, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException x) {
+            log.error("{}", x.getMessage());
+            return null;
+        }
+    }
+
+    public TwitchResponseEmote<ChannelEmote> getChannelEmotes(String channelId) {
+        var res = this.get(Utils.toURL(BASE + "chat/emotes?broadcaster_id=" + channelId));
+        log.debug(res);
+
+        try {
+            return new ObjectMapper().readValue(res, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException x) {
+            log.error("{}", x.getMessage());
+            return null;
+        }
+    }
+
     private String post(URL url, String body) {
         Map<String, String> formData = Map.of("streamlink_url", body);
         HttpRequest r;

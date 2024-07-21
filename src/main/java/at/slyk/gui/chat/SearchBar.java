@@ -2,6 +2,7 @@ package at.slyk.gui.chat;
 
 import at.slyk.Main;
 import at.slyk.twitch.TwitchApi;
+import at.slyk.twitch.TwitchChat;
 import at.slyk.twitch.types.SearchChannel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +28,9 @@ public class SearchBar extends JComboBox<SearchChannel> {
 
         this.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED && !this.foundChannels.isEmpty()) {
-                cp.joinChat(this.foundChannels.getFirst().toString());
+                var newChannel = this.foundChannels.getFirst().toString();
+                cp.joinChat(newChannel);
+                TwitchChat.channel.onNext(newChannel);
             }
         });
 

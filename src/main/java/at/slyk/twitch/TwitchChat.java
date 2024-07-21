@@ -6,18 +6,23 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import lombok.extern.slf4j.Slf4j;
+import rx.subjects.PublishSubject;
 
 import java.util.function.Consumer;
+
 
 @Slf4j
 public class TwitchChat {
     private TwitchClient twitchClient;
 
+    public static final PublishSubject<String> channel = PublishSubject.create();
     private String currentChannel = null;
     private static final String TWITCH = "twitch";
 
     public TwitchChat() {
         this.login();
+
+        channel.subscribe(c -> this.currentChannel = c);
     }
 
     public void login() {

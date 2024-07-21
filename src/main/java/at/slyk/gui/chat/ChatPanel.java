@@ -2,12 +2,18 @@ package at.slyk.gui.chat;
 
 import at.slyk.Main;
 import at.slyk.gui.player.StreamPlayer;
+import at.slyk.twitch.TwitchApi;
 import at.slyk.twitch.TwitchChat;
+import at.slyk.twitch.types.Emote;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -15,6 +21,9 @@ public class ChatPanel extends JPanel {
     public static final AtomicInteger CHAT_WIDTH = new AtomicInteger(370);
     public static final int MESSAGE_CONTAINER = CHAT_WIDTH.get() - 20;
     public static final Color BACKGROUND = Color.decode("#282b30");
+    private final transient TwitchApi api = new TwitchApi();
+    protected static final ConcurrentMap<String, Emote> GLOBAL_EMOTES = new ConcurrentHashMap<>();
+    protected static final ConcurrentMap<String, Emote> CHANNEL_EMOTES = new ConcurrentHashMap<>();
 
     private final JPanel view;
     private final JScrollPane pane;
@@ -43,7 +52,20 @@ public class ChatPanel extends JPanel {
         this.add(search, BorderLayout.NORTH);
         this.add(this.pane, BorderLayout.CENTER);
         this.add(new InputBox(this), BorderLayout.SOUTH);
-        this.initChatKeybinds();
+        this.initChatKeybindings();
+        this.initGlobalEmotes();
+
+        TwitchChat.channel.subscribe(c -> {
+            CHANNEL_EMOTES.clear();
+
+            var id = api.searchChannelsByName(c).getFirst().getId();
+            var ch = api.getChannelEmotes(id).getData();
+
+            for (Emote e : ch) {
+                CHANNEL_EMOTES.put(e.getName(), e);
+            }
+
+        });
 
         Main.user.subscribe(u -> {
             if (u == null) {
@@ -66,7 +88,7 @@ public class ChatPanel extends JPanel {
         if (!paused) {
             this.pushDownScrollbar();
         }
-        log.debug("{} {} {}", msg.getText(), msg.getPreferredSize(), msg);
+        log.trace("{} {} {}", msg.getText(), msg.getPreferredSize(), msg);
     }
 
     public void joinChat(String channel) {
@@ -91,7 +113,7 @@ public class ChatPanel extends JPanel {
         });
     }
 
-    private void initChatKeybinds() {
+    private void initChatKeybindings() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(e -> {
                     if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ALT) {
@@ -104,5 +126,21 @@ public class ChatPanel extends JPanel {
 
                     return false;
                 });
+    }
+
+    private void initGlobalEmotes() {
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            executor.submit(() -> {
+                var global = api.getGlobalEmotes().getData();
+
+                for (Emote emote : global) {
+                    GLOBAL_EMOTES.put(emote.getName(), emote);
+                }
+
+            });
+            executor.shutdown();
+        }
+
+
     }
 }
